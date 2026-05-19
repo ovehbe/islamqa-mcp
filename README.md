@@ -86,7 +86,9 @@ Point `ISLAMQA_MCP_DB_PATH` at your `islamqa.db` if it is not under `./data/`.
 
 ## Deploy
 
-See [`deploy/`](deploy/) for systemd units and nginx. After scrape → embed → `build_db.py`, copy `data/islamqa.db` to the server and restart `islamqa-mcp`.
+Step-by-step Ubuntu 22.04 setup: [`deploy/DEPLOY.md`](deploy/DEPLOY.md) (uv, systemd MCP + scrape timer, nginx, certbot).
+
+After scrape → embed → `build_db.py`, restart `islamqa-mcp` (the scrape timer does this automatically).
 
 ## Environment
 

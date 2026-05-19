@@ -1,8 +1,9 @@
 [Unit]
-Description=Run IslamQA scrape twice daily
+Description=Run IslamQA scrape pipeline twice daily
 Requires=islamqa-scrape.service
 
 [Timer]
+# 04:00 and 16:00 UTC (adjust for your timezone)
 OnCalendar=*-*-* 04:00:00
 OnCalendar=*-*-* 16:00:00
 RandomizedDelaySec=300

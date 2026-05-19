@@ -5,13 +5,17 @@ After=network.target
 [Service]
 Type=oneshot
 User=ovehbe
-WorkingDirectory=/var/www/islamqa
-Environment="PATH=/var/www/islamqa/.venv/bin"
-EnvironmentFile=-/var/www/islamqa/.env
+WorkingDirectory=/home/ovehbe/islamqa
+Environment="PATH=/home/ovehbe/islamqa/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=-/home/ovehbe/islamqa/.env
 ExecStart=/bin/bash -c '\
-  /var/www/islamqa/.venv/bin/python /var/www/islamqa/scripts/scrape_islamqa.py scrape --workers 4 --delay 0.08 --commit-every 100 && \
-  /var/www/islamqa/.venv/bin/python /var/www/islamqa/scripts/embed_islamqa.py run --commit-every 10 --sleep 0.12 && \
-  /var/www/islamqa/.venv/bin/python /var/www/islamqa/scripts/build_db.py && \
-  systemctl restart islamqa-mcp'
+  /home/ovehbe/islamqa/.venv/bin/python /home/ovehbe/islamqa/scripts/scrape_islamqa.py scrape --workers 4 --delay 0.08 --commit-every 100 && \
+  /home/ovehbe/islamqa/.venv/bin/python /home/ovehbe/islamqa/scripts/embed_islamqa.py run --batch-size 48 --sleep 0 --commit-every 50 && \
+  /home/ovehbe/islamqa/.venv/bin/python /home/ovehbe/islamqa/scripts/build_db.py'
+# Restart MCP as root after the pipeline finishes (+ prefix = run as root)
+ExecStartPost=+/bin/systemctl restart islamqa-mcp
 StandardOutput=journal
 StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

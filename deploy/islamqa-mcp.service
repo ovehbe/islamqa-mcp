@@ -5,10 +5,10 @@ After=network.target
 [Service]
 Type=simple
 User=ovehbe
-WorkingDirectory=/var/www/islamqa
-Environment="PATH=/var/www/islamqa/.venv/bin"
-EnvironmentFile=-/var/www/islamqa/.env
-ExecStart=/var/www/islamqa/.venv/bin/islamqa-mcp --config /var/www/islamqa/config.yml --transport streamable-http
+WorkingDirectory=/home/ovehbe/islamqa
+Environment="PATH=/home/ovehbe/islamqa/.venv/bin"
+EnvironmentFile=-/home/ovehbe/islamqa/.env
+ExecStart=/home/ovehbe/islamqa/.venv/bin/islamqa-mcp --config /home/ovehbe/islamqa/config.yml --transport streamable-http
 Restart=always
 RestartSec=10
 
