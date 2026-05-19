@@ -8,6 +8,8 @@ User=ovehbe
 WorkingDirectory=/home/ovehbe/islamqa
 Environment="PATH=/home/ovehbe/islamqa/.venv/bin"
 EnvironmentFile=-/home/ovehbe/islamqa/.env
+# Serve MCP at / instead of /mcp so clients use https://islamqa-mcp.org
+Environment="FASTMCP_STREAMABLE_HTTP_PATH=/"
 ExecStart=/home/ovehbe/islamqa/.venv/bin/islamqa-mcp --config /home/ovehbe/islamqa/config.yml --transport streamable-http
 Restart=always
 RestartSec=10

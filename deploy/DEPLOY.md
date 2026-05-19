@@ -117,11 +117,11 @@ curl -s 'https://search.islamqa-mcp.org/api/search?q=prayer&limit=3' | head -c 5
 Everything lives on one domain — same pattern as hadith-mcp:
 
 - **Landing page:** `https://islamqa-mcp.org/` (static `site/`)
-- **MCP endpoint:** `https://islamqa-mcp.org/mcp` (FastMCP default path, proxied by nginx)
+- **MCP endpoint:** `https://islamqa-mcp.org/` (root path via `FASTMCP_STREAMABLE_HTTP_PATH=/`)
 - **REST API:** `https://islamqa-mcp.org/api/*` (also proxied)
 - **Search UI:** `https://search.islamqa-mcp.org/` (static `search/`)
 
-In Cursor / Claude Desktop, point the MCP client at `https://islamqa-mcp.org/mcp` (streamable HTTP).
+In Cursor / Claude Desktop, point the MCP client at `https://islamqa-mcp.org` (streamable HTTP).
 
 ## Paths
 
