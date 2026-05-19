@@ -33,8 +33,14 @@
     applyTheme(next);
   }
 
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme === "dark" || savedTheme === "light") applyTheme(savedTheme);
+  // ?theme=light or ?theme=dark forces theme (useful for iframe embeds)
+  const urlTheme = new URLSearchParams(window.location.search).get("theme");
+  if (urlTheme === "light" || urlTheme === "dark") {
+    applyTheme(urlTheme);
+  } else {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme === "dark" || savedTheme === "light") applyTheme(savedTheme);
+  }
 
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
