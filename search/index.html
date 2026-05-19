@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IslamQA Search — Search 32,000+ Fatwas by Meaning or ID</title>
+  <meta name="description" content="Search over 32,000 IslamQA.info fatwas. Semantic search by meaning, direct lookup by answer ID, English text with optional Arabic, and shareable proof links." />
+  <link rel="canonical" href="https://search.islamqa-mcp.org/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://search.islamqa-mcp.org/" />
+  <meta property="og:title" content="IslamQA Search — Search 32,000+ Fatwas by Meaning or ID" />
+  <meta property="og:description" content="Semantic search over 32,000+ IslamQA.info answers. Lookup by ID or free-text query. English primary, Arabic when available, and shareable proof links." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="islamqa-mcp" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="IslamQA Search — Search 32,000+ Fatwas by Meaning or ID" />
+  <meta name="twitter:description" content="Semantic search over 32,000+ IslamQA.info answers with shareable proof links." />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "IslamQA Search",
+    "description": "Search IslamQA.info fatwas by meaning or direct answer ID. Part of the islamqa-mcp project.",
+    "url": "https://search.islamqa-mcp.org/",
+    "applicationCategory": "ReferenceApplication",
+    "operatingSystem": "Any",
+    "isAccessibleForFree": true,
+    "inLanguage": ["en", "ar"],
+    "author": {
+      "@type": "Organization",
+      "name": "islamqa-mcp",
+      "url": "https://islamqa-mcp.org/"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">islamqa-search</a>
+      <div class="nav-actions">
+        <button
+          id="themeToggle"
+          class="theme-toggle"
+          type="button"
+          aria-label="Toggle color theme"
+          title="Toggle color theme"
+        >
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <a href="https://islamqa-mcp.org" target="_blank" rel="noopener" class="nav-link">islamqa-mcp.org</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="hero-badge">Model Context Protocol</p>
+      <h1>Search IslamQA with confidence.</h1>
+      <p class="hero-sub">
+        Semantic search plus direct lookup by answer ID (e.g. <code>#264334</code>).
+      </p>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <section class="search-panel">
+        <label for="searchInput">Search query</label>
+        <div class="search-row">
+          <input id="searchInput" type="search" placeholder="e.g. fasting while travelling, #264334" autocomplete="off" />
+          <button id="searchBtn" class="btn btn-primary" type="button">Search</button>
+          <button id="clearBtn" class="btn btn-outline" type="button">Clear</button>
+        </div>
+        <div class="filters-row">
+          <label for="categorySelect">Category</label>
+          <select id="categorySelect">
+            <option value="">All categories</option>
+          </select>
+        </div>
+      </section>
+
+      <p id="globalUsageStats" class="global-usage-stats global-usage-pending" aria-live="polite" title="Loading usage counters">…</p>
+
+      <section class="status-row">
+        <p id="statsText" class="section-desc">Enter a query to start.</p>
+      </section>
+
+      <div id="loadingIndicator" class="loading-indicator" hidden aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="loading-text">Searching…</span>
+      </div>
+
+      <section id="resultsSection">
+        <ul id="resultsList" class="result-list" aria-live="polite"></ul>
+        <nav id="pagination" class="pagination" hidden>
+          <button id="prevPageBtn" class="btn btn-outline" type="button">Previous</button>
+          <span id="pageText"></span>
+          <button id="nextPageBtn" class="btn btn-outline" type="button">Next</button>
+        </nav>
+      </section>
+
+      <section id="detailView" class="detail-view" hidden>
+        <button id="backToSearch" class="btn btn-outline back-btn" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back to search
+        </button>
+        <article id="detailCard" class="detail-card"></article>
+      </section>
+    </div>
+  </main>
+
+  <template id="resultTemplate">
+    <li class="result-card" tabindex="0">
+      <header class="result-head">
+        <div class="result-meta">
+          <span class="result-id chip chip-dbid"></span>
+          <span class="result-sim chip chip-sim" hidden></span>
+        </div>
+        <div class="result-actions" role="group" aria-label="Answer actions">
+          <button class="btn-copy icon-btn" type="button" title="Copy proof link">Copy link</button>
+          <button class="btn-open icon-btn" type="button" title="Open detail">Open</button>
+          <a class="btn-source icon-btn" target="_blank" rel="noopener" title="View on IslamQA">IslamQA</a>
+        </div>
+      </header>
+      <h2 class="result-title"></h2>
+      <p class="result-excerpt"></p>
+      <div class="result-chips"></div>
+    </li>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>

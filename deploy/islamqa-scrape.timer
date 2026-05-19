@@ -1,0 +1,12 @@
+[Unit]
+Description=Run IslamQA scrape twice daily
+Requires=islamqa-scrape.service
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+OnCalendar=*-*-* 16:00:00
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IslamQA Reader</title>
+  <style>
+    :root {
+      --clr-bg: #faf8f5;
+      --clr-bg-alt: #f0ece4;
+      --clr-surface: #ffffff;
+      --clr-text: #2c2418;
+      --clr-text-muted: #6b5e4e;
+      --clr-text-faint: #9a8f7e;
+      --clr-accent: #1a6b4a;
+      --clr-accent-light: #e6f3ed;
+      --clr-accent-dark: #0f4a32;
+      --clr-border: #d9d0c3;
+      --clr-border-strong: #c2b7a5;
+      --clr-prov: #7c5a22;
+      --clr-prov-bg: #f3e8d0;
+      --clr-sim: #1d5f8a;
+      --clr-sim-bg: #e4eff7;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif;
+      --font-arabic: "Noto Naskh Arabic", "Scheherazade New",
+        "Traditional Arabic", "Amiri", Georgia, serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 16px rgba(44, 36, 24, 0.1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --clr-bg: #0f131a;
+        --clr-bg-alt: #161d27;
+        --clr-surface: #1a222d;
+        --clr-text: #e6edf7;
+        --clr-text-muted: #a7b3c4;
+        --clr-text-faint: #7f8ea3;
+        --clr-accent: #5fc89a;
+        --clr-accent-light: #1a3a27;
+        --clr-accent-dark: #82e0b6;
+        --clr-border: #2a3645;
+        --clr-border-strong: #3c4c60;
+        --clr-prov: #f0d294;
+        --clr-prov-bg: #3a2e17;
+        --clr-sim: #9bd2fa;
+        --clr-sim-bg: #1c3a55;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --clr-bg: #0f131a;
+      --clr-bg-alt: #161d27;
+      --clr-surface: #1a222d;
+      --clr-text: #e6edf7;
+      --clr-text-muted: #a7b3c4;
+      --clr-text-faint: #7f8ea3;
+      --clr-accent: #5fc89a;
+      --clr-accent-light: #1a3a27;
+      --clr-accent-dark: #82e0b6;
+      --clr-border: #2a3645;
+      --clr-border-strong: #3c4c60;
+      --clr-prov: #f0d294;
+      --clr-prov-bg: #3a2e17;
+      --clr-sim: #9bd2fa;
+      --clr-sim-bg: #1c3a55;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    /* IMPORTANT: do NOT set html/body { height: 100% }. MCP app hosts embed
+       us in an iframe that auto-sizes to content via ResizeObserver. A
+       percentage height resolves against an initially-zero-height parent
+       and collapses the whole app to 0 px (this is why Claude rendered
+       blank). Let the document flow set its own height. */
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--clr-text);
+      background: var(--clr-bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell { display: block; }
+
+    /* The app bar is hidden by default; we only show it in search / empty
+       modes. When show_answer opens a specific answer (detail mode) the
+       search form would just be chrome noise. */
+    .app-bar {
+      background: var(--clr-surface);
+      border-bottom: 1px solid var(--clr-border);
+      padding: 10px 14px;
+      display: none;
+    }
+    .shell.mode-search .app-bar,
+    .shell.mode-empty  .app-bar { display: block; }
+
+    .search-form {
+      display: grid;
+      grid-template-columns: 7fr 3fr;
+      gap: 8px;
+      max-width: 880px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .search-form .btn-primary {
+      min-height: 100%;
+      white-space: nowrap;
+    }
+
+    /* Subtle escape hatch when the in-widget search is not enough */
+    .search-external-btn {
+      display: block;
+      width: 100%;
+      max-width: 880px;
+      margin: 14px auto 0;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--clr-text-muted);
+      background: transparent;
+      border: 1px dashed var(--clr-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.45;
+      transition: border-color 0.15s ease, color 0.15s ease,
+        background 0.15s ease;
+    }
+
+    .search-external-btn:hover {
+      color: var(--clr-accent);
+      border-color: var(--clr-accent);
+      background: color-mix(in srgb, var(--clr-accent) 8%, transparent);
+    }
+
+    .search-external-btn:focus-visible {
+      outline: none;
+      border-color: var(--clr-accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-accent) 22%, transparent);
+    }
+
+    input, select, button { font: inherit; }
+
+    input, select {
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      background: var(--clr-surface);
+      color: var(--clr-text);
+      min-width: 0;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--clr-accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-accent) 22%, transparent);
+    }
+
+    .btn {
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .btn-primary { background: var(--clr-accent); color: #fff; }
+    .btn-primary:hover { background: var(--clr-accent-dark); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--clr-border);
+      color: var(--clr-text);
+    }
+    .btn-outline:hover { border-color: var(--clr-accent); color: var(--clr-accent); }
+
+    .view {
+      padding: 14px;
+      max-width: 880px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    /* In detail mode we hug the content tightly — the host iframe will
+       autosize to whatever height the card needs, no chrome around it. */
+    .shell.mode-detail .view { padding: 12px 12px 16px; }
+    .shell.mode-detail .result-card.is-detail { margin: 0; }
+
+    .section-desc {
+      color: var(--clr-text-muted);
+      margin: 0 0 12px;
+      font-size: 0.92rem;
+    }
+
+    .section-heading {
+      margin: 24px 0 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--clr-text-muted);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .loading, .empty {
+      border: 1px dashed var(--clr-border);
+      border-radius: var(--radius);
+      padding: 24px 18px;
+      color: var(--clr-text-muted);
+      text-align: center;
+      min-height: 80px;
+    }
+    .empty code {
+      background: var(--clr-bg-alt);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    /* ─── Result card ─────────────────────────────────────── */
+
+    .result-list { display: grid; gap: 14px; }
+
+    .result-card {
+      position: relative;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .result-card:hover {
+      border-color: var(--clr-border-strong);
+      box-shadow: var(--shadow-md);
+    }
+    .result-card:focus-visible {
+      outline: none;
+      border-color: var(--clr-accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-accent) 22%, transparent);
+    }
+
+    .result-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .result-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--clr-bg-alt);
+      color: var(--clr-text-muted);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.76rem;
+      font-weight: 500;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+    .chip-coll { background: var(--clr-accent-light); color: var(--clr-accent); font-weight: 600; }
+    .chip-num { background: transparent; color: var(--clr-text); padding: 3px 4px; font-weight: 600; }
+    .chip-chapter {
+      background: transparent;
+      color: var(--clr-text-faint);
+      font-style: italic;
+      font-weight: 400;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chip-chapter::before {
+      content: "·";
+      margin-right: 6px;
+      color: var(--clr-text-faint);
+      font-style: normal;
+    }
+    .chip-dbid {
+      background: var(--clr-bg-alt);
+      color: var(--clr-text-faint);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.72rem;
+    }
+    .chip-prov {
+      background: var(--clr-prov-bg);
+      color: var(--clr-prov);
+      font-weight: 500;
+      text-transform: lowercase;
+    }
+    .chip-sim {
+      background: var(--clr-sim-bg);
+      color: var(--clr-sim);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .result-actions { display: flex; gap: 2px; flex-shrink: 0; }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--clr-text-muted);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .icon-btn:hover { background: var(--clr-bg-alt); color: var(--clr-accent); }
+    .icon-btn.is-copied { color: var(--clr-accent); background: var(--clr-accent-light); }
+
+    .result-narrator {
+      margin: 0 0 6px;
+      color: var(--clr-accent);
+      font-style: italic;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .result-body { position: relative; margin: 0; }
+
+    .english-text {
+      color: var(--clr-text);
+      font-size: 0.98rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .english-text.is-clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      mask-image: linear-gradient(180deg, #000 70%, transparent);
+      -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent);
+    }
+
+    .expand-btn {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 0;
+      border: none;
+      background: transparent;
+      color: var(--clr-accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .expand-btn:hover { color: var(--clr-accent-dark); }
+
+    .arabic-block {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--clr-bg-alt);
+      border-radius: var(--radius-sm);
+      border-right: 3px solid var(--clr-accent);
+    }
+    .arabic-text {
+      margin: 0;
+      font-family: var(--font-arabic);
+      font-size: 1.35rem;
+      line-height: 2;
+      text-align: right;
+      direction: rtl;
+      color: var(--clr-text);
+    }
+
+    .result-card.is-detail { padding: 20px 22px; }
+    .result-card.is-detail .english-text { font-size: 1.02rem; }
+    .result-card.is-detail .arabic-text { font-size: 1.5rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--clr-text);
+      color: var(--clr-bg);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+    }
+    .toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+      .result-card { padding: 14px; }
+      .arabic-text { font-size: 1.2rem; line-height: 1.9; }
+      .chip-chapter { max-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="shell" class="shell mode-detail">
+    <header class="app-bar">
+      <form id="searchForm" class="search-form" role="search">
+        <input id="q" type="search" placeholder="Search topics or enter #264334" aria-label="IslamQA search" />
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </header>
+    <main id="view" class="view">
+      <div class="loading">Loading answer…</div>
+    </main>
+  </div>
+
+  <template id="cardTpl">
+    <article class="result-card" tabindex="0">
+      <header class="result-head">
+        <div class="result-meta">
+          <span class="chip chip-coll"></span>
+          <span class="chip chip-num"></span>
+          <span class="chip chip-chapter" hidden></span>
+          <span class="chip chip-dbid" hidden></span>
+          <span class="chip chip-prov" hidden></span>
+          <span class="chip chip-sim" hidden></span>
+        </div>
+        <div class="result-actions" role="group" aria-label="Answer actions">
+          <button class="icon-btn copy-link-btn" type="button" title="Copy share link" aria-label="Copy share link">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>
+          </button>
+          <button class="icon-btn copy-text-btn" type="button" title="Copy answer text" aria-label="Copy answer text">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+          <button class="icon-btn open-link" type="button" title="Open in IslamQA search" aria-label="Open in IslamQA search">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </button>
+        </div>
+      </header>
+      <p class="result-narrator" hidden></p>
+      <div class="result-body">
+        <div class="english-text"></div>
+        <button class="expand-btn" type="button" hidden>Show more</button>
+      </div>
+      <div class="arabic-block" hidden>
+        <p class="arabic-text" dir="rtl" lang="ar"></p>
+      </div>
+    </article>
+  </template>
+
+  <!-- Vendored self-contained ext-apps SDK (attaches window.__islamqaMcpSdk).
+       The server replaces this placeholder at resource-render time with the
+       contents of assets/ext-apps.bundle.js so the whole app is one inline
+       document — no CDN fetches, no dynamic imports, no cross-origin iframes. -->
+  <script>/*__SDK_BUNDLE__*/</script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const sdk = window.__islamqaMcpSdk;
+      const shell = document.getElementById("shell");
+      const view = document.getElementById("view");
+      const searchForm = document.getElementById("searchForm");
+      const qInput = document.getElementById("q");
+      const cardTpl = document.getElementById("cardTpl");
+
+      function setMode(mode) {
+        shell.classList.remove("mode-detail", "mode-search", "mode-empty");
+        shell.classList.add(`mode-${mode}`);
+      }
+
+      let app = null;
+      let initialData = null;
+      let interactive = true;
+      let searchAppBase = "https://search.islamqa-mcp.org";
+
+      function searchAppHomeUrl() {
+        const b = String(searchAppBase || "").replace(/\/+$/, "");
+        return `${b}/`;
+      }
+
+      function appendOpenSearchAppButton(parent) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "search-external-btn";
+        btn.textContent = "Open IslamQA search in your browser";
+        btn.addEventListener("click", () => tryOpenUrl(searchAppHomeUrl()));
+        parent.appendChild(btn);
+      }
+
+      // ─── Rendering helpers ──────────────────────────────
+      const esc = (s) => String(s ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
+      function answerUrl(id) { return `${searchAppBase}/?id=${id}`; }
+
+      function formatSimilarity(sim) {
+        if (typeof sim !== "number" || !Number.isFinite(sim) || sim <= 0) return null;
+        const pct = Math.round(sim * 100);
+        if (pct <= 0) return null;
+        return `${pct}% match`;
+      }
+
+      async function copyToClipboard(text, btn, { silent = false } = {}) {
+        let ok = false;
+        try {
+          await navigator.clipboard.writeText(text);
+          ok = true;
+        } catch { /* sandboxed iframe — fall through */ }
+        if (!ok) {
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.cssText = "position:fixed;left:-9999px;top:-9999px;opacity:0";
+            document.body.appendChild(ta);
+            ta.select();
+            ok = document.execCommand("copy");
+            ta.remove();
+          } catch { /* last resort failed */ }
+        }
+        if (!silent) {
+          if (ok) {
+            if (btn) {
+              btn.classList.add("is-copied");
+              setTimeout(() => btn.classList.remove("is-copied"), 800);
+            }
+            showToast("Copied");
+          } else {
+            showToast("Copy failed \u2014 open the link manually");
+          }
+        }
+        return ok;
+      }
+
+      async function tryOpenUrl(url) {
+        try {
+          const w = window.open(url, "_blank", "noopener");
+          if (w) return;
+        } catch { /* blocked by sandbox */ }
+        const ok = await copyToClipboard(url, null, { silent: true });
+        showToast(ok ? "Can\u2019t open links here \u2014 URL copied" : "Can\u2019t open links in this host");
+      }
+
+      let toastTimer = null;
+      function showToast(msg) {
+        let el = document.querySelector(".toast");
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "toast";
+          document.body.appendChild(el);
+        }
+        el.textContent = msg;
+        requestAnimationFrame(() => el.classList.add("is-visible"));
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("is-visible"), 1200);
+      }
+
+      function setupClamp(textEl, expandBtn, expanded) {
+        if (expanded) {
+          textEl.classList.remove("is-clamped");
+          expandBtn.hidden = true;
+          return;
+        }
+        textEl.classList.add("is-clamped");
+        requestAnimationFrame(() => {
+          const overflow = textEl.scrollHeight - textEl.clientHeight > 4;
+          if (overflow) {
+            expandBtn.hidden = false;
+            expandBtn.textContent = "Show more";
+          } else {
+            textEl.classList.remove("is-clamped");
+            expandBtn.hidden = true;
+          }
+        });
+      }
+
+      function renderCard(item, { detail = false, onOpen = null } = {}) {
+        const card = cardTpl.content.firstElementChild.cloneNode(true);
+        if (detail) card.classList.add("is-detail");
+
+        const aid = item.id ?? item.answer_id;
+        card.querySelector(".chip-num").textContent = aid != null ? `#${aid}` : "";
+        card.querySelector(".chip-coll").hidden = true;
+
+        const meta = card.querySelector(".result-meta");
+        for (const cat of item.categories || []) {
+          const el = document.createElement("span");
+          el.className = "chip chip-coll";
+          el.textContent = cat.name_en || cat.name_ar || "";
+          el.hidden = false;
+          meta.appendChild(el);
+        }
+
+        const simLabel = formatSimilarity(item.similarity);
+        if (simLabel) {
+          const el = card.querySelector(".chip-sim");
+          el.textContent = simLabel;
+          el.hidden = false;
+        }
+
+        const title = (item.title_en || item.title_ar || "").trim();
+        if (title) {
+          const el = card.querySelector(".result-narrator");
+          el.textContent = title;
+          el.hidden = false;
+          el.style.fontStyle = "normal";
+          el.style.color = "var(--clr-text)";
+          el.style.fontWeight = "600";
+          el.style.fontSize = detail ? "1.08rem" : "1.02rem";
+        }
+
+        const textEl = card.querySelector(".english-text");
+        const expandBtn = card.querySelector(".expand-btn");
+        let body = "";
+        if (detail) {
+          const q = (item.question_en || item.question_ar || "").trim();
+          const a = (item.answer_en || item.answer_ar || "").trim();
+          if (q) body += `Question:\n${q}\n\n`;
+          if (a) body += `Answer:\n${a}`;
+        } else {
+          body = (item.answer_excerpt || item.question_excerpt
+            || (item.answer_en || "").slice(0, 320)
+            || (item.question_en || "").slice(0, 200)).trim();
+        }
+        textEl.textContent = body;
+
+        let expanded = detail;
+        setupClamp(textEl, expandBtn, expanded);
+        expandBtn.addEventListener("click", () => {
+          expanded = !expanded;
+          if (expanded) {
+            textEl.classList.remove("is-clamped");
+            expandBtn.textContent = "Show less";
+          } else {
+            textEl.classList.add("is-clamped");
+            expandBtn.textContent = "Show more";
+          }
+        });
+
+        const ar = (item.answer_ar || "").trim();
+        if (detail && ar) {
+          const block = card.querySelector(".arabic-block");
+          card.querySelector(".arabic-text").textContent = ar;
+          block.hidden = false;
+        }
+
+        const linkUrl = item.url || (aid != null ? answerUrl(aid) : "");
+        card.querySelector(".open-link").addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (linkUrl) tryOpenUrl(linkUrl);
+        });
+
+        card.querySelector(".copy-link-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+          copyToClipboard(item.url || answerUrl(aid), e.currentTarget);
+        });
+        card.querySelector(".copy-text-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+          const bodyCopy = [title, "", textEl.textContent, `\n${item.url || answerUrl(aid)}`]
+            .filter(Boolean).join("\n");
+          copyToClipboard(bodyCopy, e.currentTarget);
+        });
+
+        if (onOpen && aid != null) {
+          card.style.cursor = "pointer";
+          card.addEventListener("click", (e) => {
+            if (e.target.closest(".icon-btn, .expand-btn, a")) return;
+            onOpen(aid);
+          });
+        }
+
+        return card;
+      }
+
+      function renderEmpty() {
+        setMode("empty");
+        view.replaceChildren();
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.innerHTML = `
+            <p>Search for a fatwa above,<br>
+            or enter a DB id like <code>#264334</code>.</p>`;
+        view.appendChild(empty);
+        appendOpenSearchAppButton(view);
+      }
+
+      function renderDetail(answer) {
+        setMode("detail");
+        const wrap = document.createElement("div");
+        wrap.appendChild(renderCard(answer, { detail: true }));
+        view.replaceChildren(wrap);
+      }
+
+      function renderSearch(results, meta) {
+        setMode("search");
+        const wrap = document.createElement("div");
+        if (meta?.query) {
+          const h = document.createElement("p");
+          h.className = "section-desc";
+          const note = meta.note ? ` · ${esc(meta.note)}` : "";
+          h.innerHTML = `<strong>${esc(meta.query)}</strong> — ${results.length} result(s)${note}`;
+          wrap.appendChild(h);
+        }
+        if (!results.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "No results.";
+          wrap.appendChild(empty);
+          appendOpenSearchAppButton(wrap);
+        } else {
+          const list = document.createElement("div");
+          list.className = "result-list";
+          for (const item of results) {
+            list.appendChild(renderCard(item, { onOpen: openAnswer }));
+          }
+          wrap.appendChild(list);
+        }
+        view.replaceChildren(wrap);
+      }
+
+      function renderFromStructured(data) {
+        if (!data) return;
+        if (data.search_app_url) searchAppBase = data.search_app_url;
+        if (typeof data.interactive === "boolean") interactive = data.interactive;
+        if (data.kind === "detail" && data.answer) {
+          renderDetail(data.answer);
+        } else if (data.kind === "search") {
+          qInput.value = data.query || "";
+          renderSearch(data.search_results || [], {
+            query: data.query,
+            note: data.search_note,
+          });
+        } else {
+          renderEmpty();
+        }
+      }
+
+
+      function toolPayload(result) {
+        if (result?.structuredContent) return result.structuredContent;
+        if (result?.result?.structuredContent) return result.result.structuredContent;
+        return parseToolResultJson(result);
+      }
+
+      function parseToolResultJson(result) {
+        const block = result?.content?.find((c) => c.type === "text");
+        if (!block?.text) return null;
+        try { return JSON.parse(block.text); }
+        catch { return null; }
+      }
+
+      async function openAnswer(answerId) {
+        if (!app) return;
+        view.innerHTML = '<div class="loading">Loading…</div>';
+        try {
+          const result = await app.callServerTool({
+            name: "fetch_answer",
+            arguments: { answer_id: answerId },
+          });
+          const parsed = toolPayload(result);
+          if (!parsed?.answer) {
+            view.innerHTML = '<div class="empty">Answer not found.</div>';
+            return;
+          }
+          renderDetail(parsed.answer);
+        } catch (e) {
+          view.innerHTML = `<div class="empty">Lookup failed: ${esc(e.message || e)}</div>`;
+        }
+      }
+
+      async function runSearch(query) {
+        if (!app) return;
+        view.innerHTML = '<div class="loading">Searching…</div>';
+        try {
+          const result = await app.callServerTool({
+            name: "search_answers",
+            arguments: {
+              query,
+              limit: 30,
+              mode: "semantic",
+            },
+          });
+          const parsed = parseToolResultJson(result) || { results: [] };
+          renderSearch(parsed.results || [], { query, note: parsed.note });
+        } catch (e) {
+          view.innerHTML = `<div class="empty">Search failed: ${esc(e.message || e)}</div>`;
+        }
+      }
+
+      function parseQueryLookup(q) {
+        q = q.trim();
+        const bare = q.match(/^#?(\d+)$/);
+        if (bare) return { answer_id: Number.parseInt(bare[1], 10) };
+        return null;
+      }
+      searchForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!interactive) return;
+        const q = qInput.value.trim();
+        if (!q) return;
+        const lookup = parseQueryLookup(q);
+        if (lookup?.answer_id != null) {
+          openAnswer(lookup.answer_id);
+        } else {
+          runSearch(q);
+        }
+      });
+
+      // ─── MCP App bootstrap ──────────────────────────────
+      if (!sdk || !sdk.App) {
+        view.replaceChildren();
+        const sdkFail = document.createElement("div");
+        sdkFail.className = "empty";
+        sdkFail.innerHTML = `
+            <p>MCP Apps SDK failed to load.<br>
+            Use the button below to open the search site in your browser.</p>`;
+        view.appendChild(sdkFail);
+        appendOpenSearchAppButton(view);
+        return;
+      }
+
+      const instance = new sdk.App({ name: "IslamQA Reader", version: "0.3.0" });
+
+      instance.ontoolresult = (result) => {
+        try {
+          // Some hosts pass the CallToolResult directly; others wrap it in
+          // a notification object whose payload lives on `.result`. Accept
+          // both shapes and also look inside `result.content[0].text` as a
+          // last resort (matches our text fallback JSON block).
+          const sc =
+            result?.structuredContent ??
+            result?.result?.structuredContent ??
+            (() => {
+              try {
+                const t = result?.content?.find?.((c) => c.type === "text")?.text;
+                return t ? JSON.parse(t) : null;
+              } catch {
+                return null;
+              }
+            })();
+          if (!sc || !sc.kind) return;
+          initialData = sc;
+          renderFromStructured(sc);
+        } catch (e) {
+          view.innerHTML = `<div class="empty">Render failed: ${esc(e.message || e)}</div>`;
+        }
+      };
+
+      instance.onhostcontextchanged = (ctx) => {
+        try {
+          if (ctx?.theme && sdk.applyDocumentTheme) sdk.applyDocumentTheme(ctx.theme);
+          if (ctx?.styles?.variables && sdk.applyHostStyleVariables) {
+            sdk.applyHostStyleVariables(ctx.styles.variables);
+          }
+          if (ctx?.styles?.css?.fonts && sdk.applyHostFonts) {
+            sdk.applyHostFonts(ctx.styles.css.fonts);
+          }
+        } catch {}
+      };
+
+      instance.onteardown = async () => ({ state: {} });
+
+      // Hard deadline: if connect() never resolves (e.g. host protocol
+      // mismatch), make sure the iframe still shows a usable empty state
+      // so the user is not staring at a blank tool card.
+      const connectDeadline = setTimeout(() => {
+        if (!app && !initialData) renderEmpty();
+      }, 2500);
+
+      (async () => {
+        try {
+          await instance.connect();
+          app = instance;
+          clearTimeout(connectDeadline);
+          const hc = instance.getHostContext?.();
+          if (hc?.theme && sdk.applyDocumentTheme) sdk.applyDocumentTheme(hc.theme);
+        } catch (e) {
+          clearTimeout(connectDeadline);
+          view.innerHTML = `<div class="empty">Could not connect to host: ${esc(e.message || e)}</div>`;
+          return;
+        }
+
+        // Some hosts deliver the initial tool-result synchronously during
+        // connect(), others fire it a tick later. If nothing arrives within
+        // the grace period, fall back to the interactive empty state so the
+        // app never stays stuck on "Loading…".
+        setTimeout(() => {
+          if (!initialData) renderEmpty();
+        }, 750);
+      })();
+    })();
+  </script>
+</body>
+</html>

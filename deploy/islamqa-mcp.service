@@ -1,0 +1,16 @@
+[Unit]
+Description=IslamQA MCP Server (FastMCP streamable-http)
+After=network.target
+
+[Service]
+Type=simple
+User=ovehbe
+WorkingDirectory=/var/www/islamqa
+Environment="PATH=/var/www/islamqa/.venv/bin"
+EnvironmentFile=-/var/www/islamqa/.env
+ExecStart=/var/www/islamqa/.venv/bin/islamqa-mcp --config /var/www/islamqa/config.yml --transport streamable-http
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

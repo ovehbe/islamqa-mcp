@@ -1,0 +1,17 @@
+[Unit]
+Description=IslamQA scrape + embed + rebuild DB
+After=network.target
+
+[Service]
+Type=oneshot
+User=ovehbe
+WorkingDirectory=/var/www/islamqa
+Environment="PATH=/var/www/islamqa/.venv/bin"
+EnvironmentFile=-/var/www/islamqa/.env
+ExecStart=/bin/bash -c '\
+  /var/www/islamqa/.venv/bin/python /var/www/islamqa/scripts/scrape_islamqa.py scrape --workers 4 --delay 0.08 --commit-every 100 && \
+  /var/www/islamqa/.venv/bin/python /var/www/islamqa/scripts/embed_islamqa.py run --commit-every 10 --sleep 0.12 && \
+  /var/www/islamqa/.venv/bin/python /var/www/islamqa/scripts/build_db.py && \
+  systemctl restart islamqa-mcp'
+StandardOutput=journal
+StandardError=journal

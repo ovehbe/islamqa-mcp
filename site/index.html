@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>islamqa-mcp — Grounded IslamQA for AI</title>
+  <meta name="description" content="Open-source MCP server that gives AI assistants grounded access to 32,000+ IslamQA.info fatwas — English and Arabic text, semantic search, and canonical citation links.">
+  <link rel="canonical" href="https://islamqa-mcp.org/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://islamqa-mcp.org/">
+  <meta property="og:title" content="islamqa-mcp — Grounded IslamQA for AI">
+  <meta property="og:description" content="Open-source MCP server that gives AI assistants grounded access to 32,000+ IslamQA.info fatwas — English and Arabic text, semantic search, and canonical citation links.">
+  <meta property="og:image" content="https://islamqa-mcp.org/logo.png">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="islamqa-mcp">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="islamqa-mcp — Grounded IslamQA for AI">
+  <meta name="twitter:description" content="Open-source MCP server that gives AI assistants grounded access to 32,000+ IslamQA.info fatwas — English and Arabic text, semantic search, and canonical citation links.">
+  <meta name="twitter:image" content="https://islamqa-mcp.org/logo.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "islamqa-mcp",
+    "description": "Model Context Protocol server for IslamQA.info fatwas with semantic search and citation URLs.",
+    "url": "https://islamqa-mcp.org/",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "codeRepository": "https://github.com/ovehbe/islamqa-mcp",
+    "isAccessibleForFree": true,
+    "inLanguage": ["en", "ar"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ───────── NAV ───────── -->
+<nav class="top-nav" id="topNav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">islamqa-mcp</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#why">Why</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#search-site">Search</a></li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#grounding">Grounding</a></li>
+      <li><a href="https://search.islamqa-mcp.org" target="_blank" rel="noopener" class="nav-search">Search App</a></li>
+    </ul>
+    <button
+      id="themeToggle"
+      class="theme-toggle"
+      type="button"
+      aria-label="Toggle color theme"
+      title="Toggle color theme"
+    >
+      <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ───────── HERO ───────── -->
+<header class="hero">
+  <div class="hero-inner">
+    <p class="hero-badge">Model Context Protocol</p>
+    <h1>IslamQA + AI&hairsp;—<br class="hide-mobile">grounded, not guesswork.</h1>
+    <p class="hero-sub">
+      An <strong>MCP server</strong> that serves verified fatwa text from
+      <a href="https://islamqa.info" target="_blank" rel="noopener">IslamQA.info</a>&hairsp;—English
+      primary, Arabic when available&hairsp;—so assistants cite real data instead of quoting from memory.
+    </p>
+    <div class="hero-cta">
+      <a href="#setup" class="btn btn-primary">Get Started</a>
+      <a href="#tools" class="btn btn-outline">Explore Tools</a>
+    </div>
+  </div>
+</header>
+
+<!-- ───────── WHY ───────── -->
+<section id="why" class="section">
+  <div class="container">
+    <h2 class="section-title">Why ground IslamQA answers?</h2>
+    <div class="comparison">
+      <div class="comparison-card bad">
+        <div class="comparison-label">Without grounding</div>
+        <ul>
+          <li>Paraphrased fatwas from training data</li>
+          <li>Wrong or invented answer numbers</li>
+          <li>Links to random fatwa or hadith sites</li>
+          <li>No way to verify what the AI said</li>
+        </ul>
+      </div>
+      <div class="comparison-arrow" aria-hidden="true">→</div>
+      <div class="comparison-card good">
+        <div class="comparison-label">With islamqa-mcp</div>
+        <ul>
+          <li>Exact English &amp; Arabic text from the corpus</li>
+          <li>Correct IslamQA answer ID on every row</li>
+          <li>Canonical proof URL + link to islamqa.info</li>
+          <li>Semantic + keyword search over 32 000+ answers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── HOW IT WORKS ───────── -->
+<section id="how-it-works" class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">How It Works</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-num">1</span>
+        <div>
+          <strong>You ask the AI about a ruling or topic.</strong>
+          <p>A specific question, a thematic search, or “what does IslamQA say about…?”</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <div>
+          <strong>The AI calls islamqa-mcp.</strong>
+          <p>
+            It retrieves verified text, narrators, and metadata from a normalized
+            database derived from the
+            <a href="https://github.com/AhmedBaset/islamqa.info" target="_blank" rel="noopener">islamqa.info</a>
+            dataset (sourced from <a href="https://islamqa.info/" target="_blank" rel="noopener">islamqa.info</a>).
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <div>
+          <strong>The response is grounded.</strong>
+          <p>
+            The AI cites answer IDs, includes the <code>url</code> proof link, and can point to the
+            original <code>source_url_en</code> / <code>source_url_ar</code> on islamqa.info.
+          </p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ───────── TOOLS ───────── -->
+<section id="tools" class="section">
+  <div class="container">
+    <h2 class="section-title">Available Tools</h2>
+    <p class="section-desc">
+      The MCP server exposes five tools. The AI picks the right one based on what you ask.
+    </p>
+    <div class="tool-grid">
+
+      <div class="tool-card">
+        <h3>fetch_grounding_rules</h3>
+        <p>
+          Returns citation guidance and limitations once per session.
+          Re-calls get a short repeat unless <code>force_full=True</code>.
+        </p>
+      </div>
+
+      <div class="tool-card">
+        <h3>list_categories</h3>
+        <p>
+          Lists topic categories with English and Arabic names and answer counts.
+        </p>
+      </div>
+
+      <div class="tool-card">
+        <h3>fetch_answer</h3>
+        <p>
+          Fetch one fatwa by IslamQA <code>answer_id</code>. Returns English and Arabic
+          question/answer text and categories when available.
+        </p>
+      </div>
+
+      <div class="tool-card">
+        <h3>search_answers</h3>
+        <p>
+          <strong>Semantic</strong> search (default), <strong>keyword</strong> (SQL substring),
+          or <strong>both</strong>. Optional category filter. Falls back to keyword on rate
+          limits or embedding errors.
+        </p>
+      </div>
+
+      <div class="tool-card">
+        <h3>show_answer</h3>
+        <p>
+          Opens the <strong>IslamQA Reader</strong> in supported MCP hosts — interactive
+          UI by <code>answer_id</code> or <code>query</code>, with text fallback elsewhere.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ───────── SEARCH SITE ───────── -->
+<section id="search-site" class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">IslamQA Search Web App</h2>
+    <p class="section-desc">
+      Use <strong>search.islamqa-mcp.org</strong> to verify AI outputs quickly, explore results directly,
+      and share links to exact answer rows.
+    </p>
+    <div class="search-site-cta-card">
+      <div class="search-site-cta">
+        <input
+          id="searchSiteQuery"
+          class="search-site-input"
+          type="search"
+          placeholder="Search by topic or enter #ID / answer ID"
+          aria-label="Search query for IslamQA search app"
+        />
+        <button id="searchSiteSubmit" type="button" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <h3>Verify AI citations quickly</h3>
+        <p>
+          If an assistant returns a answer ID, you can open the search app and check the
+          exact row text with answer ID metadata in one place.
+        </p>
+      </div>
+      <div class="tool-card">
+        <h3>Direct ID lookup</h3>
+        <p>
+          Supports global DB ids like <code>#264334</code> and collection patterns like
+          <code>#264334</code>, so it matches real AI output formats.
+        </p>
+      </div>
+      <div class="tool-card">
+        <h3>Shareable proof links</h3>
+        <p>
+          Every result can be shared via direct links, helping teams and users verify what an AI
+          claimed without repeating a full search.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── SETUP ───────── -->
+<section id="setup" class="section">
+  <div class="container">
+    <h2 class="section-title">Setup</h2>
+    <div class="server-status" id="serverStatus">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-label" id="statusLabel">Checking server…</span>
+      <span class="usage-stats-chips usage-stats-pending" id="usageStatsChips" aria-live="polite">
+        <!-- usage-stats v2: confirm this comment is in View Source after deploy -->
+        <span class="usage-stat-sep" aria-hidden="true">·</span>
+        <span class="usage-stat-pending" title="Loading usage counters">…</span>
+      </span>
+    </div>
+    <div class="server-url-box">
+      <code class="server-url-value">https://islamqa-mcp.org</code>
+      <button class="copy-url-btn" aria-label="Copy URL">Copy</button>
+    </div>
+    <p class="section-desc">
+      Connect this server to any AI client that supports MCP. One-time setup, then it just works.
+    </p>
+
+    <div class="setup-tabs" role="tablist">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="claude">Claude</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="chatgpt">ChatGPT</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="cursor">Cursor</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="other">Other Clients</button>
+    </div>
+
+    <!-- Claude -->
+    <div class="tab-panel active" id="panel-claude">
+      <h3>Claude (Web &amp; Desktop)</h3>
+      <p>Requires a <a href="https://claude.ai/" target="_blank" rel="noopener">Claude subscription</a> (Pro, Team, or Enterprise).</p>
+
+      <div class="setup-steps-list">
+        <div class="setup-step">
+          <span class="setup-step-num">1</span>
+          <div class="setup-step-body">
+            <strong>Open Connectors</strong>
+            <p>Go to <strong>Settings</strong> → <strong>Connectors</strong> → <strong>Customize</strong> panel.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">2</span>
+          <div class="setup-step-body">
+            <strong>Add custom connector</strong>
+            <p>Click the <strong>+</strong> button, then select <strong>Add custom connector</strong>.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">3</span>
+          <div class="setup-step-body">
+            <strong>Configure</strong>
+            <div class="field-row"><span class="field-label">Name</span> <code>islamqa</code></div>
+            <div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">4</span>
+          <div class="setup-step-body">
+            <strong>Allow all tools</strong>
+            <p>Open the connector and set every tool to <strong>Always allow</strong>. They're all read-only.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">5</span>
+          <div class="setup-step-body">
+            <strong>Use it</strong>
+            <p>Open a new chat, enable the <code>islamqa</code> connector, and ask your question. Look for tool-call indicators in the response.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ChatGPT -->
+    <div class="tab-panel" id="panel-chatgpt">
+      <h3>ChatGPT (Web, Desktop &amp; Mobile)</h3>
+      <p>Requires a <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT subscription</a>. Set up on Web or Desktop once and it syncs to Mobile.</p>
+
+      <div class="setup-steps-list">
+        <div class="setup-step">
+          <span class="setup-step-num">1</span>
+          <div class="setup-step-body">
+            <strong>Open app settings</strong>
+            <p>Go to <strong>Settings</strong> → <strong>Apps</strong> → <strong>Advanced</strong> at the bottom.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">2</span>
+          <div class="setup-step-body">
+            <strong>Enable developer mode</strong>
+            <p>Turn on <strong>Developer mode</strong>. A <strong>Create app</strong> button appears in the top-right.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">3</span>
+          <div class="setup-step-body">
+            <strong>Create the app</strong>
+            <div class="field-row"><span class="field-label">Name</span> <code>islamqa</code></div>
+            <div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div>
+            <div class="field-row"><span class="field-label">Auth</span> <code>none</code></div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">4</span>
+          <div class="setup-step-body">
+            <strong>Use it</strong>
+            <p>Invoke with <code>@islamqa</code> in any chat. Look for <strong>Called tool</strong> indicators in the response.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="tab-panel" id="panel-cursor">
+      <h3>Cursor</h3>
+      <p>Add the remote MCP server in Cursor's settings.</p>
+
+      <div class="setup-steps-list">
+        <div class="setup-step">
+          <span class="setup-step-num">1</span>
+          <div class="setup-step-body">
+            <strong>Open MCP settings</strong>
+            <p>Go to <strong>Settings</strong> → <strong>MCP</strong> → <strong>Add new MCP server</strong>.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">2</span>
+          <div class="setup-step-body">
+            <strong>Configure</strong>
+            <div class="field-row"><span class="field-label">Type</span> <code>streamable-http</code></div>
+            <div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">3</span>
+          <div class="setup-step-body">
+            <strong>Use it</strong>
+            <p>The hadith tools are now available. Ask about rulings and the agent will call the server automatically.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other Clients -->
+    <div class="tab-panel" id="panel-other">
+      <h3>Other MCP Clients</h3>
+      <p>Any MCP-compatible client can connect. Use the server name <code>islamqa</code>, point it at the URL, and keep transport on <code>streamable-http</code>.</p>
+
+      <div class="setup-steps-list">
+        <div class="setup-step">
+          <span class="setup-step-num">1</span>
+          <div class="setup-step-body">
+            <strong>At a glance</strong>
+            <div class="field-row"><span class="field-label">Name</span> <code>islamqa</code></div>
+            <div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div>
+            <div class="field-row"><span class="field-label">Transport</span> <code>streamable-http</code></div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">2</span>
+          <div class="setup-step-body">
+            <strong>JSON connection object</strong>
+            <div class="code-block">
+              <button class="copy-btn" aria-label="Copy">Copy</button>
+              <pre><code>{
+  "name": "islamqa",
+  "url": "https://islamqa-mcp.org",
+  "transport": "streamable-http"
+}</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="setup-step-num">3</span>
+          <div class="setup-step-body">
+            <strong>Claude Desktop config file</strong>
+            <p>Add to <code>claude_desktop_config.json</code>:</p>
+            <div class="code-block">
+              <button class="copy-btn" aria-label="Copy">Copy</button>
+              <pre><code>{
+  "mcpServers": {
+    "islamqa": {
+      "url": "https://islamqa-mcp.org",
+      "transport": "streamable-http"
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ───────── GROUNDING ───────── -->
+<section id="grounding" class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Grounding &amp; Limitations</h2>
+    <div class="grounding-grid">
+      <div class="grounding-item">
+        <h4>Source of truth</h4>
+        <p>
+          All text comes from <strong>islamqa.db</strong>, scraped from IslamQA.info. Prefer tool output
+          over model paraphrase.
+        </p>
+      </div>
+      <div class="grounding-item">
+        <h4>Citations</h4>
+        <p>
+          Always cite with <strong>answer ID</strong> and the <code>url</code> field. Use
+          <code>source_url_en</code> / <code>source_url_ar</code> for the original page.
+        </p>
+      </div>
+      <div class="grounding-item">
+        <h4>English / Arabic</h4>
+        <p>
+          English is primary for search and display. Arabic is available when scraped; toggle in the
+          search app.
+        </p>
+      </div>
+      <div class="grounding-item">
+        <h4>Not a mufti</h4>
+        <p>
+          Reflects IslamQA's scholarly approach, not universal consensus. Consult a qualified scholar
+          for personal rulings.
+        </p>
+      </div>
+      <div class="grounding-item">
+        <h4>Search limits</h4>
+        <p>
+          Semantic search uses OpenAI embeddings. Keyword search is SQL substring. Neither ranks by
+          scholarly importance.
+        </p>
+      </div>
+      <div class="grounding-item">
+        <h4>Updates</h4>
+        <p>
+          Corpus is refreshed from sitemaps on a schedule. New answers appear after scrape + embed +
+          rebuild.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── DISCLAIMER ───────── -->
+<section class="disclaimer" id="disclaimer">
+  <div class="container">
+    <div class="disclaimer-card">
+      <div class="disclaimer-header">
+        <span class="disclaimer-icon" aria-hidden="true">&#9888;</span>
+        <h2>Important — Please Read</h2>
+      </div>
+      <div class="disclaimer-body">
+        <p>
+          This tool retrieves fatwa text from a database. <strong>It is not a scholar, a mufti, or a
+          substitute for qualified Islamic scholarship.</strong> AI can still misinterpret context,
+          misapply text, or present text without the nuance that trained scholars provide.
+        </p>
+        <p>
+          <strong>Do not blindly trust any AI output on religious matters</strong> — whether from this
+          tool or any other. Always verify citations against IslamQA.info.
+          Consult qualified scholars for matters of fiqh, aqeedah, and religious practice.
+        </p>
+        <p>
+          We are <strong>not affiliated with IslamQA.info</strong>. Data is republished for search and
+          grounding purposes with attribution links.
+        </p>
+        </div>
+      <div class="disclaimer-footer">
+        We built this tool to reduce AI hallucination, not to replace human knowledge.<br>
+        Use it as a starting point, never as the final word.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── FOOTER ───────── -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <p>
+        <strong>islamqa-mcp</strong> &middot;
+        <a href="https://github.com/ovehbe/islamqa-mcp" target="_blank" rel="noopener">GitHub</a> &middot;
+        GPL-3.0
+      </p>
+      <p class="footer-credit">
+        Data from <a href="https://islamqa.info" target="_blank" rel="noopener">IslamQA.info</a>.<br class="footer-credit-mobile-break" aria-hidden="true" />
+        Inspired by <a href="https://github.com/ovehbe/hadith-mcp" target="_blank" rel="noopener">hadith-mcp</a>
+        and <a href="https://github.com/quran/quran-mcp" target="_blank" rel="noopener">quran-mcp</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+.env
+
+# Local corpus (generated; multi‑GB — not in git)
+data/*
+!data/.gitkeep
+!data/README.md
+
+__pycache__/
+*.pyc
+.venv/
+dist/
+*.egg-info/

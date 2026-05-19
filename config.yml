@@ -1,0 +1,11 @@
+# Optional defaults for `islamqa-mcp`. Override DB path with ISLAMQA_MCP_DB_PATH.
+
+database:
+  path: data/islamqa.db
+
+embedding:
+  query_model: text-embedding-3-large
+
+rate_limit:
+  search_per_minute: 60
+  search_cache_max_entries: 256
