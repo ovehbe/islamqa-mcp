@@ -46,7 +46,7 @@
 <body>
 
 <nav class="top-nav" id="topNav">
-  <motion class="nav-inner">
+  <div class="nav-inner">
     <a href="#" class="nav-brand">islamqa-mcp</a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#why">Why</a></li>
@@ -84,9 +84,9 @@
 <section id="why" class="section">
   <div class="container">
     <h2 class="section-title">Why ground IslamQA answers?</h2>
-    <motion class="comparison">
+    <div class="comparison">
       <div class="comparison-card bad">
-        <motion class="comparison-label">Without grounding</div>
+        <div class="comparison-label">Without grounding</div>
         <ul>
           <li>Paraphrased fatwas from training data</li>
           <li>Wrong or invented answer numbers</li>
@@ -94,7 +94,7 @@
           <li>No way to verify what the AI said</li>
         </ul>
       </div>
-      <div class="comparison-arrow" aria-hidden="true">→</motion>
+      <div class="comparison-arrow" aria-hidden="true">→</div>
       <div class="comparison-card good">
         <div class="comparison-label">With islamqa-mcp</div>
         <ul>
@@ -137,7 +137,7 @@
             The AI cites answer IDs, includes the <code>url</code> proof link, and can point to the
             original <code>source_url_en</code> / <code>source_url_ar</code> on islamqa.info.
           </p>
-        </motion>
+        </div>
       </li>
     </ol>
   </div>
@@ -156,7 +156,7 @@
         <p>Citation guidance and limitations once per session. Re-calls return a short repeat unless <code>force_full=True</code>.</p>
       </div>
 
-      <motion class="tool-card">
+      <div class="tool-card">
         <h3>list_categories</h3>
         <p>Lists topic categories with English and Arabic names and answer counts.</p>
       </div>
@@ -242,29 +242,29 @@
       <h3>Claude (Web &amp; Desktop)</h3>
       <p>Requires a <a href="https://claude.ai/" target="_blank" rel="noopener">Claude subscription</a>.</p>
       <div class="setup-steps-list">
-        <motion class="setup-step"><span class="setup-step-num">1</span><div class="setup-step-body"><strong>Open Connectors</strong><p>Settings → Connectors → Customize.</p></div></div>
-        <div class="setup-step"><span class="setup-step-num">2</span><motion class="setup-step-body"><strong>Add custom connector</strong><p>Click + → Add custom connector.</p></div></motion>
-        <div class="setup-step"><span class="setup-step-num">3</span><div class="setup-step-body"><strong>Configure</strong><motion class="field-row"><span class="field-label">Name</span> <code>islamqa</code></div><div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div></div></div>
+        <div class="setup-step"><span class="setup-step-num">1</span><div class="setup-step-body"><strong>Open Connectors</strong><p>Settings → Connectors → Customize.</p></div></div>
+        <div class="setup-step"><span class="setup-step-num">2</span><div class="setup-step-body"><strong>Add custom connector</strong><p>Click + → Add custom connector.</p></div></div>
+        <div class="setup-step"><span class="setup-step-num">3</span><div class="setup-step-body"><strong>Configure</strong><div class="field-row"><span class="field-label">Name</span> <code>islamqa</code></div><div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div></div></div>
         <div class="setup-step"><span class="setup-step-num">4</span><div class="setup-step-body"><strong>Allow all tools</strong><p>Set every tool to Always allow (read-only).</p></div></div>
-        <motion class="setup-step"><span class="setup-step-num">5</span><motion class="setup-step-body"><strong>Use it</strong><p>Enable the <code>islamqa</code> connector in a new chat.</p></div></motion>
+        <div class="setup-step"><span class="setup-step-num">5</span><div class="setup-step-body"><strong>Use it</strong><p>Enable the <code>islamqa</code> connector in a new chat.</p></div></div>
       </div>
     </div>
 
     <div class="tab-panel" id="panel-chatgpt">
       <h3>ChatGPT</h3>
       <div class="setup-steps-list">
-        <div class="setup-step"><span class="setup-step-num">1</span><div class="setup-step-body"><strong>Settings → Apps → Advanced</strong></motion></motion>
+        <div class="setup-step"><span class="setup-step-num">1</span><div class="setup-step-body"><strong>Settings → Apps → Advanced</strong></div></div>
         <div class="setup-step"><span class="setup-step-num">2</span><div class="setup-step-body"><strong>Enable Developer mode</strong></div></div>
-        <div class="setup-step"><span class="setup-step-num">3</span><div class="setup-step-body"><strong>Create app</strong><div class="field-row"><span class="field-label">Name</span> <code>islamqa</code></motion><div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div></div></div>
+        <div class="setup-step"><span class="setup-step-num">3</span><div class="setup-step-body"><strong>Create app</strong><div class="field-row"><span class="field-label">Name</span> <code>islamqa</code></div><div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div></div></div>
         <div class="setup-step"><span class="setup-step-num">4</span><div class="setup-step-body"><strong>Use</strong><p>Invoke with <code>@islamqa</code> in chat.</p></div></div>
       </div>
     </div>
 
-    <motion class="tab-panel" id="panel-cursor">
+    <div class="tab-panel" id="panel-cursor">
       <h3>Cursor</h3>
       <div class="setup-steps-list">
         <div class="setup-step"><span class="setup-step-num">1</span><div class="setup-step-body"><strong>MCP settings</strong><p>Settings → MCP → Add new MCP server.</p></div></div>
-        <div class="setup-step"><span class="setup-step-num">2</span><div class="setup-step-body"><div class="field-row"><span class="field-label">Type</span> <code>streamable-http</code></div><motion class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div></motion></div>
+        <div class="setup-step"><span class="setup-step-num">2</span><div class="setup-step-body"><div class="field-row"><span class="field-label">Type</span> <code>streamable-http</code></div><div class="field-row"><span class="field-label">URL</span> <code>https://islamqa-mcp.org</code></div></div></div>
       </div>
     </div>
 
@@ -289,7 +289,7 @@
           <span class="setup-step-num">2</span>
           <div class="setup-step-body">
             <strong>Claude Desktop config</strong>
-            <motion class="code-block">
+            <div class="code-block">
               <button class="copy-btn" type="button">Copy</button>
               <pre><code>{
   "mcpServers": {
@@ -313,10 +313,10 @@
     <div class="grounding-grid">
       <div class="grounding-item"><h4>Source of truth</h4><p>Text from <strong>islamqa.db</strong>, scraped from IslamQA.info. Prefer tool output over paraphrase.</p></div>
       <div class="grounding-item"><h4>Citations</h4><p>Always include <strong>answer ID</strong> and the <code>url</code> field. Use <code>source_url_en</code> / <code>source_url_ar</code> for the original page.</p></div>
-      <motion class="grounding-item"><h4>English / Arabic</h4><p>English is primary for search and display. Arabic is available when scraped; toggle in the search app.</p></div>
+      <div class="grounding-item"><h4>English / Arabic</h4><p>English is primary for search and display. Arabic is available when scraped; toggle in the search app.</p></div>
       <div class="grounding-item"><h4>Not a mufti</h4><p>Reflects IslamQA's scholarly approach, not universal consensus. Consult a qualified scholar for personal rulings.</p></div>
       <div class="grounding-item"><h4>Search limits</h4><p>Semantic search needs embeddings (OpenAI). Keyword search is substring-based. Neither ranks by scholarly importance.</p></div>
-      <div class="grounding-item"><h4>Updates</h4><p>Corpus is refreshed from sitemaps on a schedule. New answers appear after scrape + embed + rebuild.</p></motion>
+      <div class="grounding-item"><h4>Updates</h4><p>Corpus is refreshed from sitemaps on a schedule. New answers appear after scrape + embed + rebuild.</p></div>
     </div>
   </div>
 </section>
