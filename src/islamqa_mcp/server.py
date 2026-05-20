@@ -17,7 +17,7 @@ from fastmcp import Context, FastMCP
 from fastmcp.resources import ResourceContent
 from fastmcp.server.lifespan import lifespan
 from fastmcp.tools import ToolResult
-from mcp.types import TextContent
+from mcp.types import Icon, TextContent
 from openai import OpenAI
 from starlette.requests import Request
 from starlette.responses import Response
@@ -224,6 +224,7 @@ def build_server(*, config_yaml: Path | None = None) -> FastMCP:
             "If you do not know that id yet, call fetch_answer or search_answers first, then show_answer. "
             "show_answer also returns a text fallback with the same 'url' field for non-App hosts."
         ),
+        icons=[Icon(src="https://islamqa-mcp.org/logo.png")],
         lifespan=_lifespan,
     )
     mcp._islamqa_cfg = cfg  # type: ignore[attr-defined]
@@ -526,6 +527,23 @@ def build_server(*, config_yaml: Path | None = None) -> FastMCP:
                 },
             ),
         ]
+
+    # --- Icon route ---
+    _ICON_PATH = Path(__file__).parent / "assets" / "icon.png"
+    _icon_bytes: bytes | None = None
+    if _ICON_PATH.is_file():
+        _icon_bytes = _ICON_PATH.read_bytes()
+        logger.info("loaded icon asset (%d bytes)", len(_icon_bytes))
+
+    @mcp.custom_route("/icon.png", methods=["GET", "HEAD"])
+    async def serve_icon(request: Request) -> Response:
+        if _icon_bytes is None:
+            return Response(status_code=404)
+        return Response(
+            content=_icon_bytes,
+            media_type="image/png",
+            headers={"Cache-Control": "public, max-age=604800, immutable"},
+        )
 
     # --- REST API ---
     def _api_cors_headers() -> dict[str, str]:
