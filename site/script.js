@@ -160,7 +160,6 @@
         const res = await fetch(url, { cache: "default", mode: "cors" });
         if (!res.ok) continue;
         const j = await res.json();
-        el.classList.remove("usage-stats-pending", "usage-stats-missing");
         el.innerHTML = [
           '<span class="usage-stat-sep" aria-hidden="true">·</span>',
           `<span>${formatCount(j.total_searches ?? 0)} searches</span>`,
@@ -174,8 +173,6 @@
         /* try next */
       }
     }
-    el.classList.add("usage-stats-missing");
-    el.classList.remove("usage-stats-pending");
     el.innerHTML =
       '<span class="usage-stat-sep" aria-hidden="true">·</span><span>stats unavailable</span>';
   }
