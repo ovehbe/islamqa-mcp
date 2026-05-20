@@ -643,7 +643,10 @@ code {
 .grounding-item h4 { margin-bottom: 8px; }
 .grounding-item p { font-size: .9rem; color: var(--clr-text-muted); }
 
-.disclaimer { padding: 60px 0; }
+.disclaimer {
+  padding: 60px 0;
+  background: var(--clr-bg);
+}
 
 .disclaimer-card {
   max-width: 720px;
@@ -652,6 +655,7 @@ code {
   border: 1.5px solid #d4a94c;
   border-radius: var(--radius);
   padding: 36px 40px;
+  box-shadow: 0 2px 12px rgba(180, 140, 60, .08);
 }
 
 .disclaimer-header {
@@ -673,10 +677,13 @@ code {
   background: #fdf3e0;
   color: #b8860b;
   font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
-.disclaimer-header h2 { font-size: 1.15rem; color: #8b6914; margin: 0; }
-.disclaimer-body p { font-size: .9rem; color: var(--clr-text-muted); margin-bottom: 14px; }
+.disclaimer-header h2 { font-size: 1.15rem; font-weight: 700; color: #8b6914; margin: 0; letter-spacing: -.01em; }
+.disclaimer-body p { font-size: .9rem; color: var(--clr-text-muted); line-height: 1.75; margin-bottom: 14px; text-align: left; }
+.disclaimer-body p:last-child { margin-bottom: 0; }
+.disclaimer-body strong { color: var(--clr-text); }
 .disclaimer-footer {
   margin-top: 20px;
   padding-top: 16px;
@@ -685,6 +692,51 @@ code {
   font-size: .88rem;
   font-weight: 600;
   color: #8b6914;
+  letter-spacing: .01em;
+}
+
+@media (max-width: 480px) {
+  .disclaimer-card { padding: 24px 20px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .disclaimer-card {
+    border-color: #3f5a86;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .3);
+  }
+  :root:not([data-theme="light"]) .disclaimer-header {
+    border-bottom-color: #2a3647;
+  }
+  :root:not([data-theme="light"]) .disclaimer-icon {
+    background: #1f2f46;
+    color: #9ec5ff;
+  }
+  :root:not([data-theme="light"]) .disclaimer-header h2 {
+    color: #9ec5ff;
+  }
+  :root:not([data-theme="light"]) .disclaimer-footer {
+    border-top-color: #2a3647;
+    color: #9ec5ff;
+  }
+}
+
+:root[data-theme="dark"] .disclaimer-card {
+  border-color: #3f5a86;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .3);
+}
+:root[data-theme="dark"] .disclaimer-header {
+  border-bottom-color: #2a3647;
+}
+:root[data-theme="dark"] .disclaimer-icon {
+  background: #1f2f46;
+  color: #9ec5ff;
+}
+:root[data-theme="dark"] .disclaimer-header h2 {
+  color: #9ec5ff;
+}
+:root[data-theme="dark"] .disclaimer-footer {
+  border-top-color: #2a3647;
+  color: #9ec5ff;
 }
 
 .site-footer {
